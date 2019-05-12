@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="beginner"
+        android:entries="@array/difficultiesArray"
+        android:entryValues="@array/difficultiesValuesArray"
+        android:key="difficulties_list"
+        android:summary="Here you can change game difficulty to that one, you want"
+        android:title="Difficulty" />
+</PreferenceScreen>
