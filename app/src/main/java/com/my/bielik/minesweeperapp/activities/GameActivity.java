@@ -1,4 +1,4 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.my.bielik.minesweeperapp.Game;
+import com.my.bielik.minesweeperapp.GameFieldAdapter;
+import com.my.bielik.minesweeperapp.R;
+import com.my.bielik.minesweeperapp.ScoreSaver;
+import com.my.bielik.minesweeperapp.dialogs.GameWinnerDialog;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -29,6 +35,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private Timer timer;
     private MyTimerTask myTimerTask;
+    private ScoreSaver scoreSaver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         game = Game.getInstance();
         difficulty = Integer.parseInt(getIntent().getStringExtra("difficulty"));
+
+        scoreSaver = new ScoreSaver(this);
+
         startGame();
 
 
@@ -100,11 +110,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void finishGame(boolean finishedGameStatus){
         if (finishedGameStatus){
+            String time = tvTimeInfo.getText().toString();
             Bundle bundle = new Bundle();
             bundle.putInt("difficulty", difficulty);
-            bundle.putString("time", tvTimeInfo.getText().toString());
+            bundle.putString("time", time);
             gameWinnerDialog.setArguments(bundle);
-            gameWinnerDialog.show(getSupportFragmentManager(), "Winner dialog");
+            gameWinnerDialog.show(getSupportFragmentManager(), "winner_dialog");
+            scoreSaver.saveScore(difficulty, time);
         }
         endTimer();
     }

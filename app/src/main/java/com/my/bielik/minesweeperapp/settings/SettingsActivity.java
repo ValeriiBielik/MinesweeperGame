@@ -1,7 +1,9 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.settings;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.my.bielik.minesweeperapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

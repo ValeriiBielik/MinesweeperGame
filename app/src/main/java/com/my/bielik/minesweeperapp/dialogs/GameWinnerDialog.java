@@ -1,4 +1,4 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
+
+import com.my.bielik.minesweeperapp.activities.MainActivity;
 
 public class GameWinnerDialog extends AppCompatDialogFragment {
 

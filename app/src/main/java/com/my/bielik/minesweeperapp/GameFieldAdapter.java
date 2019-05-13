@@ -26,7 +26,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
     private int minesCounter;
     private boolean finishedGameStatus;
 
-    interface Callback {
+    public interface Callback {
         boolean isCellMarked();
     }
 
@@ -35,7 +35,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         void getFinishedGameStatus(boolean finishedGameStatus);
     }
 
-    void registerCallback(Callback callback) {
+    public void registerCallback(Callback callback) {
         this.callback = callback;
     }
 

@@ -1,9 +1,12 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.settings;
 
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
+
+import com.my.bielik.minesweeperapp.activities.MainActivity;
+import com.my.bielik.minesweeperapp.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
