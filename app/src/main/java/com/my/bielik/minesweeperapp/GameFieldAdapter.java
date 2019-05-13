@@ -49,7 +49,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         }
     }
 
-    GameFieldAdapter(Context context, Game game) {
+    public GameFieldAdapter(Context context, Game game) {
         this.context = context;
         this.game = game;
         this.cellList = game.getList();
