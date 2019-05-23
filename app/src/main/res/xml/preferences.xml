@@ -7,4 +7,9 @@
         android:key="difficulties_list"
         android:summary="Here you can change game difficulty to that one, you want"
         android:title="Difficulty" />
+    <SwitchPreference
+        android:title="Programme solving"
+        android:defaultValue="false"
+        android:key="switch_game_solver"
+        android:summary="Set it, if you want to see how a programme wins the game"/>
 </PreferenceScreen>

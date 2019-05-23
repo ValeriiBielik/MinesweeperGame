@@ -2,6 +2,7 @@ package com.my.bielik.minesweeperapp.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.my.bielik.minesweeperapp.GameFieldAdapter;
 import com.my.bielik.minesweeperapp.R;
 import com.my.bielik.minesweeperapp.ScoreSaver;
 import com.my.bielik.minesweeperapp.dialogs.GameWinnerDialog;
+import com.my.bielik.minesweeperapp.settings.SettingsActivity;
+import com.my.bielik.minesweeperapp.solverLogic.GameSolver;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -36,6 +39,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Timer timer;
     private MyTimerTask myTimerTask;
     private ScoreSaver scoreSaver;
+    private GameSolver gameSolver;
+    private boolean solverEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +59,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         btnReset.setOnClickListener(this);
 
         gameWinnerDialog = new GameWinnerDialog();
-
         game = Game.getInstance();
         difficulty = Integer.parseInt(getIntent().getStringExtra("difficulty"));
 
         scoreSaver = new ScoreSaver(this);
 
+        solverEnabled = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(SettingsActivity.KEY_PREF_SWITCH_GAME_SOLVER, false);
+
         startGame();
-
-
     }
+
 
     @Override
     public void onClick(View v) {
@@ -78,7 +84,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 btnMineFlag.setBackgroundResource(R.drawable.button_flag_focused);
                 btnSimpleFlag.setBackgroundResource(R.drawable.button_flag_not_focused);
                 break;
-            case R.id.button_reset :
+            case R.id.button_reset:
                 tvTimeInfo.setText("00:00");
                 startGame();
         }
@@ -99,7 +105,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         finishGame(finishedGameStatus);
     }
 
-    private void startGame(){
+    private void startGame() {
         game.setDifficulty(difficulty);
         game.generateField();
         tvNumOfMines.setText(String.valueOf(game.getNumOfMines()));
@@ -108,41 +114,44 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         startTimer();
     }
 
-    private void finishGame(boolean finishedGameStatus){
-        if (finishedGameStatus){
+    private void finishGame(boolean finishedGameStatus) {
+        if (finishedGameStatus) {
             String time = tvTimeInfo.getText().toString();
             Bundle bundle = new Bundle();
             bundle.putInt("difficulty", difficulty);
             bundle.putString("time", time);
             gameWinnerDialog.setArguments(bundle);
             gameWinnerDialog.show(getSupportFragmentManager(), "winner_dialog");
-            scoreSaver.saveScore(difficulty, time);
+            if (!solverEnabled)
+                scoreSaver.saveScore(difficulty, time);
+
         }
         endTimer();
     }
 
-    private void showField(){
-        adapter = new GameFieldAdapter(this, game);
+    private void showField() {
+        adapter = new GameFieldAdapter(this, game, solverEnabled);
         adapter.registerCallback(this);
 
-        switch (difficulty){
-            case 0 :
+        switch (difficulty) {
+            case 0:
                 layoutManager = new GridLayoutManager(this, 9);
                 break;
-            case 1 :
+            case 1:
                 layoutManager = new GridLayoutManager(this, 16);
                 break;
-            case 2 :
+            case 2:
                 layoutManager = new GridLayoutManager(this, 30);
                 break;
         }
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        gameSolver = new GameSolver(layoutManager);
     }
 
-    private void startTimer(){
-        if (timer != null){
+    private void startTimer() {
+        if (timer != null) {
             timer.cancel();
         }
 
@@ -151,7 +160,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         timer.schedule(myTimerTask, 1000, 1000);
     }
 
-    private void endTimer(){
+    private void endTimer() {
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -161,10 +170,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     class MyTimerTask extends TimerTask {
 
         private int counter = 0;
+
         @Override
         public void run() {
             counter++;
-            final String strTime = String.format(Locale.getDefault(),"%02d:%02d", counter / 60, counter % 60);
+            final String strTime = String.format(Locale.getDefault(), "%02d:%02d", counter / 60, counter % 60);
 
             runOnUiThread(new Runnable() {
                 @Override

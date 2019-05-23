@@ -8,6 +8,7 @@ import com.my.bielik.minesweeperapp.R;
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_DIFFICULTIES_LIST = "difficulties_list";
+    public static final String KEY_PREF_SWITCH_GAME_SOLVER = "switch_game_solver";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

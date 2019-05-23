@@ -59,7 +59,7 @@ public class Game {
 
                 if (isMine) {
                     numOfMines++;
-                    field[x][y] = new Cell(true);
+                    field[x][y] = new Cell(true, x * cellsCountY + y);
                     cellList.add(field[x][y]);
                     for (int i = -1; i < 2; i++) {
                         for (int j = -1; j < 2; j++) {
@@ -69,7 +69,7 @@ public class Game {
                         }
                     }
                 } else {
-                    field[x][y] = new Cell(false);
+                    field[x][y] = new Cell(false, x * cellsCountY + y);
                     cellList.add(field[x][y]);
                 }
             }
@@ -107,6 +107,10 @@ public class Game {
 
     public int getMinesNear(int x, int y) {
         return minesNear[x][y];
+    }
+
+    public int getCellCount(){
+        return cellsCountX * cellsCountY;
     }
 
     class Difficulty {

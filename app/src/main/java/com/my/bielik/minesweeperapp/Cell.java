@@ -1,36 +1,32 @@
 package com.my.bielik.minesweeperapp;
 
 public class Cell {
-    /** Состояние клетки (пустая клетка / клетка с миной / взорванная клетка) */
+    private int id;
     private int state;
-
-    /** Указывает на то, открыта ли клетка пользователем */
     private boolean isHidden;
-
-    /** Указывает на то, была ли клетка отмечена пользователем (поставил ли он на неё флажок) */
     private boolean isMarked;
+    private Double probability;
 
-    /**
-     * Инициализирует поля класса
-     *
-     * @param isMine Является ли клетка миной
-     */
-    public Cell(boolean isMine){
+    public Cell(boolean isMine, int id){
         this.isHidden = true;
         this.isMarked = false;
         this.state = isMine ? CellState.MINE : CellState.EMPTY;
+        this.id = id;
+        probability = 0.0;
     }
 
-    /**
-     * @return Возвращает информацию о том, была ли клетка открыта пользователем
-     */
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public boolean isHidden(){
         return isHidden;
     }
 
-    /**
-     * @return Возвращает информацию о том, была ли клетка помечена пользователем (поставил ли он на неё флажок)
-     */
     public boolean isMarked(){
         return isMarked;
     }
@@ -39,23 +35,24 @@ public class Cell {
         isMarked = marked;
     }
 
-    /**
-     * @return Возвращает сотостояние клетки (пустая клетка / клетка с миной / взорванная клетка)
-     */
     public int getState() {
         return state;
     }
 
-    /**
-     * Открывает содержимое клетки
-     */
     public void show() {
         this.isHidden = false;
+    }
+
+    public Double getProbability() {
+        return probability;
+    }
+
+    public void setProbability(Double probability) {
+        this.probability = probability;
     }
 
     public class CellState {
         public static final int EMPTY = 0;
         public static final int MINE = 1;
-        public static final int EXPLOSED = 2;
     }
 }

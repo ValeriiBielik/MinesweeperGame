@@ -22,5 +22,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+        Preference switchPref = findPreference(SettingsActivity.KEY_PREF_SWITCH_GAME_SOLVER);
+        switchPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                boolean selected = (boolean) o;
+                String out;
+                if (selected)
+                    out = "selected";
+                else
+                    out = "not selected";
+                Toast.makeText(getActivity(), out, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 }
