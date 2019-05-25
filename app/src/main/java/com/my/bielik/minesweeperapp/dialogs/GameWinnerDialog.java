@@ -17,7 +17,7 @@ public class GameWinnerDialog extends AppCompatDialogFragment {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        difficulty = args.getInt("difficulty");
+        difficulty = args.getInt("difficulty", 0);
         time = args.getString("time");
     }
 

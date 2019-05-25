@@ -22,6 +22,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
         Preference switchPref = findPreference(SettingsActivity.KEY_PREF_SWITCH_GAME_SOLVER);
         switchPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

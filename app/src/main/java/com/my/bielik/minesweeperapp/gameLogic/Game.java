@@ -1,4 +1,4 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.gameLogic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Game {
 
-    public static final int SPAWN_CHANCE_OF_MINE = 15;
+    private static final int SPAWN_CHANCE_OF_MINE = 15;
 
     private int difficulty;
     private int cellsCountX;
@@ -24,24 +24,6 @@ public class Game {
 
     public static Game getInstance() {
         return instance;
-    }
-
-    private void initFieldSize() {
-        switch (difficulty) {
-            case Difficulty.EASY:
-                cellsCountX = 9;
-                cellsCountY = 9;
-                break;
-            case Difficulty.MEDIUM:
-                cellsCountX = 16;
-                cellsCountY = 16;
-                break;
-            case Difficulty.HARD:
-                cellsCountX = 16;
-                cellsCountY = 30;
-                break;
-        }
-        numOfMines = 0;
     }
 
     public void generateField() {
@@ -101,7 +83,7 @@ public class Game {
         return cellList;
     }
 
-    public Cell getCell(int x, int y){
+    public Cell getCell(int x, int y) {
         return field[x][y];
     }
 
@@ -109,11 +91,29 @@ public class Game {
         return minesNear[x][y];
     }
 
-    public int getCellCount(){
+    public int getCellCount() {
         return cellsCountX * cellsCountY;
     }
 
-    class Difficulty {
+    private void initFieldSize() {
+        switch (difficulty) {
+            case Difficulty.EASY:
+                cellsCountX = 9;
+                cellsCountY = 9;
+                break;
+            case Difficulty.MEDIUM:
+                cellsCountX = 16;
+                cellsCountY = 16;
+                break;
+            case Difficulty.HARD:
+                cellsCountX = 16;
+                cellsCountY = 30;
+                break;
+        }
+        numOfMines = 0;
+    }
+
+    public class Difficulty {
         public final static int EASY = 0;
         public final static int MEDIUM = 1;
         public final static int HARD = 2;

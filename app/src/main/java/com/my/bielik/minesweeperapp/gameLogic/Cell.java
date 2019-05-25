@@ -1,4 +1,4 @@
-package com.my.bielik.minesweeperapp;
+package com.my.bielik.minesweeperapp.gameLogic;
 
 public class Cell {
     private int id;
@@ -7,7 +7,7 @@ public class Cell {
     private boolean isMarked;
     private Double probability;
 
-    public Cell(boolean isMine, int id){
+    Cell(boolean isMine, int id){
         this.isHidden = true;
         this.isMarked = false;
         this.state = isMine ? CellState.MINE : CellState.EMPTY;
@@ -17,10 +17,6 @@ public class Cell {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public boolean isHidden(){

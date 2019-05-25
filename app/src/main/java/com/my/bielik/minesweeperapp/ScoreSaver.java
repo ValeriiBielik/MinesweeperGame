@@ -26,7 +26,7 @@ public class ScoreSaver {
 
         for (int i = 0; i < 3; i++) {
             String difficultyLevel = changeScoreTime(difficulty, i);
-            if (scoreTime.equals("")){
+            if (scoreTime.equals("")) {
                 editor.putString(difficultyLevel, time);
                 break;
             } else {
@@ -50,7 +50,7 @@ public class ScoreSaver {
                 scoreTime = preferences.getString(SCORES_AMATEUR_DIFFICULTY.concat(String.valueOf(pos)), "");
                 return SCORES_AMATEUR_DIFFICULTY.concat(String.valueOf(pos));
             case 2:
-                scoreTime = preferences.getString(SCORES_PROFESSIONAL_DIFFICULTY.concat(String.valueOf(pos)),"");
+                scoreTime = preferences.getString(SCORES_PROFESSIONAL_DIFFICULTY.concat(String.valueOf(pos)), "");
                 return SCORES_PROFESSIONAL_DIFFICULTY.concat(String.valueOf(pos));
             default:
                 return "-1";

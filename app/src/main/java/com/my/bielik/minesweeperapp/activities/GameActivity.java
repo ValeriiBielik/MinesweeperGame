@@ -10,13 +10,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.my.bielik.minesweeperapp.Game;
+import com.my.bielik.minesweeperapp.gameLogic.Game;
 import com.my.bielik.minesweeperapp.GameFieldAdapter;
 import com.my.bielik.minesweeperapp.R;
 import com.my.bielik.minesweeperapp.ScoreSaver;
 import com.my.bielik.minesweeperapp.dialogs.GameWinnerDialog;
 import com.my.bielik.minesweeperapp.settings.SettingsActivity;
-import com.my.bielik.minesweeperapp.solverLogic.GameSolver;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -27,19 +26,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
-    private GameFieldAdapter adapter;
     private ImageButton btnSimpleFlag, btnMineFlag;
     private TextView tvNumOfMines, tvTimeInfo;
-    private Button btnReset;
-    private boolean isMarked;
+
     private Game game;
     private GameWinnerDialog gameWinnerDialog;
-    private int difficulty;
+    private ScoreSaver scoreSaver;
 
     private Timer timer;
-    private MyTimerTask myTimerTask;
-    private ScoreSaver scoreSaver;
-    private GameSolver gameSolver;
+
+    private int difficulty;
+    private boolean isMarked;
     private boolean solverEnabled;
 
     @Override
@@ -52,7 +49,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         btnSimpleFlag = findViewById(R.id.button_simple_flag);
         btnMineFlag = findViewById(R.id.button_mine_flag);
         tvTimeInfo = findViewById(R.id.time);
-        btnReset = findViewById(R.id.button_reset);
+        Button btnReset = findViewById(R.id.button_reset);
 
         btnSimpleFlag.setOnClickListener(this);
         btnMineFlag.setOnClickListener(this);
@@ -116,21 +113,22 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void finishGame(boolean finishedGameStatus) {
         if (finishedGameStatus) {
-            String time = tvTimeInfo.getText().toString();
-            Bundle bundle = new Bundle();
-            bundle.putInt("difficulty", difficulty);
-            bundle.putString("time", time);
-            gameWinnerDialog.setArguments(bundle);
-            gameWinnerDialog.show(getSupportFragmentManager(), "winner_dialog");
-            if (!solverEnabled)
+            if (!solverEnabled) {
+                String time = tvTimeInfo.getText().toString();
+                Bundle bundle = new Bundle();
+                bundle.putInt("difficulty", difficulty);
+                bundle.putString("time", time);
+                gameWinnerDialog.setArguments(bundle);
+                gameWinnerDialog.show(getSupportFragmentManager(), "winner_dialog");
                 scoreSaver.saveScore(difficulty, time);
+            }
 
         }
         endTimer();
     }
 
     private void showField() {
-        adapter = new GameFieldAdapter(this, game, solverEnabled);
+        GameFieldAdapter adapter = new GameFieldAdapter(this, solverEnabled);
         adapter.registerCallback(this);
 
         switch (difficulty) {
@@ -147,7 +145,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        gameSolver = new GameSolver(layoutManager);
     }
 
     private void startTimer() {
@@ -156,7 +153,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         timer = new Timer();
-        myTimerTask = new MyTimerTask();
+        MyTimerTask myTimerTask = new MyTimerTask();
         timer.schedule(myTimerTask, 1000, 1000);
     }
 
@@ -167,7 +164,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    class MyTimerTask extends TimerTask {
+    private class MyTimerTask extends TimerTask {
 
         private int counter = 0;
 

@@ -8,21 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-
+import com.my.bielik.minesweeperapp.gameLogic.Cell;
+import com.my.bielik.minesweeperapp.gameLogic.Game;
 import com.my.bielik.minesweeperapp.solverLogic.GameSolver;
-import com.my.bielik.minesweeperapp.solverLogic.Group;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.ViewHolder> {
 
-    public static final String TAG = "GAME_SOLVER";
+    private static final String TAG = "GAME_FIELD_ADAPTER";
 
     private Game game;
     private List<Cell> cellList;
@@ -34,9 +30,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
     private OnSelectedButtonListener listener;
 
     private int minesCounter;
-    private ViewHolder viewHolder;
-    private int tag;
-    ArrayList<Group> groups = new ArrayList<>();
+    private int btnTag;
 
     private boolean solverEnabled;
     private boolean endGameStatus;
@@ -62,16 +56,16 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             button = itemView.findViewById(R.id.image_button);
-            button.setTag(tag);
-            if (tag + 1 < game.getCellCount())
-                tag++;
+            button.setTag(btnTag);
+            if (btnTag + 1 < game.getCellCount())
+                btnTag++;
         }
     }
 
-    public GameFieldAdapter(Context context, Game game, boolean solverEnabled) {
+    public GameFieldAdapter(Context context, boolean solverEnabled) {
         this.context = context;
-        this.game = game;
-        this.cellList = game.getList();
+        game = Game.getInstance();
+        cellList = game.getList();
         minesCounter = game.getNumOfMines();
         this.solverEnabled = solverEnabled;
     }
@@ -95,16 +89,11 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         }
         view.setLayoutParams(params);
         listener = (OnSelectedButtonListener) context;
-        viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-
-//        viewHolder.button.setLayoutParams(params);
-//        viewHolder.button.setTag(i);
-//        viewHolder.button.setId(i);
         viewHolder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +137,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         }
     }
 
-    private void openCell(int position, ImageButton imageButton) {
+    public void openCell(int position, ImageButton imageButton) {
         if (game.getList().get(position).getState() == Cell.CellState.EMPTY) {
             game.getList().get(position).show();
             setBtnBackgroundAsEmptyCell(position, imageButton);
@@ -259,80 +248,25 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
 
     private void solveGame() {
         Log.e(TAG, "solveGame()");
-        myAlgorithm();
+        myAlgorithm(new GameSolver(parent));
     }
 
-
-    private void myAlgorithm() {
+    private void myAlgorithm(GameSolver gameSolver) {
         Log.e(TAG, "my algorithm()");
 
         boolean firstSetGroup = true;
 
         while (!gameEnded()) {
             if (firstSetGroup) {
-                setGroups();
-                firstSetGroup = openGroups();
+                gameSolver.setGroups();
+                firstSetGroup = gameSolver.openGroups(this);
             } else {
-                correctPossibilities();
-                openGroupWithPossibility();
+                gameSolver.correctPossibilities();
+                gameSolver.openGroupWithPossibility(this);
                 firstSetGroup = true;
             }
         }
-    }
 
-    private void setGroups() {
-        Log.e(TAG, "set groups, groups num: " + groups.size());
-        groups.clear();
-        for (int x = 0; x < game.getCellsCountX(); x++) {
-            for (int y = 0; y < game.getCellsCountY(); y++) {
-                if (!game.getCell(x, y).isHidden() && game.getMinesNear(x, y) > 0) {
-                    Group group = new Group(game.getMinesNear(x, y));
-                    for (int i = -1; i < 2; i++) {
-                        for (int j = -1; j < 2; j++) {
-                            if ((x + i >= 0) && (x + i < game.getCellsCountX()) && (y + j >= 0) && (y + j < game.getCellsCountY())) {
-                                if (game.getCell(x + i, y + j).isHidden()) {
-                                    if (game.getCell(x + i, y + j).isMarked())
-                                        group.addMarkedCell(game.getCell(x + i, y + j));
-                                    else
-                                        group.addHiddenCell(game.getCell(x + i, y + j));
-                                }
-                            }
-                        }
-                    }
-                    groups.add(group);
-                }
-            }
-        }
-        for (int i = 0; i < groups.size(); i++) {
-            Group group = groups.get(i);
-            group.checkMarks();
-        }
-    }
-
-    private boolean openGroups() {
-        Log.e(TAG, "open groups, groups num: " + groups.size());
-        int id;
-        ImageButton button;
-        boolean success = false;
-
-        for (Group group : groups) {
-            if (group.getNumOfMines() == 0) {
-                for (int i = 0; i < group.getHiddenCells().size(); i++) {
-                    id = group.getHiddenCells().get(i).getId();
-                    button = parent.findViewWithTag(id);
-                    openCell(id, button);
-                    success = true;
-                }
-            } else if (group.getNumOfMines() == group.getHiddenCells().size()) {
-                for (int i = 0; i < group.getHiddenCells().size(); i++) {
-                    id = group.getHiddenCells().get(i).getId();
-                    button = parent.findViewWithTag(id);
-                    setMarker(id, button);
-                    success = true;
-                }
-            }
-        }
-        return success;
     }
 
     private boolean gameEnded() {
@@ -340,8 +274,8 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
         int counter = game.getNumOfMines();
 
         for (int i = 0; i < cellList.size(); i++) {
-            if (cellList.get(i).getState() == Cell.CellState.MINE){
-                if (!cellList.get(i).isHidden()){
+            if (cellList.get(i).getState() == Cell.CellState.MINE) {
+                if (!cellList.get(i).isHidden()) {
                     return true;
                 }
                 if (cellList.get(i).isMarked()) {
@@ -349,78 +283,7 @@ public class GameFieldAdapter extends RecyclerView.Adapter<GameFieldAdapter.View
                 }
             }
         }
-
-        if (counter == 0)
-            return true;
-        return false;
-    }
-
-    private void correctPossibilities() {
-        Log.e(TAG, "correct possibilities");
-        Map<Cell, Double> cells = new HashMap<>();
-        // цикл устанавливает единое значение вероятности в каждой ячейке, учитывая различные значения вероятностей в ячейке от разных групп
-        for (Group group : groups) {
-            for (Cell cell : group.getHiddenCells()) {
-                Double value;
-                if ((value = cells.get(cell)) == null) // если ячейка еще не в мапе
-                    cells.put(cell, (double) group.getNumOfMines() / group.size()); // то добавляем ее со значением из группы
-                else     //если она уже в мапе, то корректируем ее значение по теории вероятности
-                    cells.put(cell, GameSolver.Prob.sum(value, (double) group.getNumOfMines() / group.size()));
-            }
-        }
-        // цикл корректирует значения с учетом того, что сумма вероятностей в группе должна быть равна количеству мин в группе
-        boolean repeat;
-        do {
-            repeat = false;
-            for (Group group : groups) {                                        // для каждой группы
-                List<Double> prob = group.getProbabilities();                   //  берем список вероятностей всех ячеек в группе в процентах
-                Double sum = 0.0;
-                if (prob.size() != 0) {
-                    for (Double elem : prob)
-                        sum += elem;                                            //  вычисляем ее сумму
-                    int mines = group.getNumOfMines();
-                    if (Math.abs(sum - mines) > 1) {                            //  если разница между ними велика, то проводим корректировку
-                        repeat = true;                                          //   фиксируем факт корректировки
-                        GameSolver.Prob.correct(prob, mines);                   //   корректируем список
-                        for (int i = 0; i < group.size(); i++) {                //   заносим откорректированные значения из списка в ячейки
-                            double value = prob.get(i);
-                            group.getHiddenCells().get(i).setProbability(value);
-                        }
-                    }
-                }
-            }
-        }
-        while (repeat);
-        for (Cell cell : cells.keySet()) {  // перестраховка
-            if (cell.getProbability() > 0.99) cell.setProbability(0.99);
-            if (cell.getProbability() < 0) cell.setProbability(0.0);
-        }
-    }
-
-    private void openGroupWithPossibility() {
-        Log.e(TAG, "open group with possibility()");
-
-        Cell cellToOpen = null;
-        for (Group group : groups) {
-            for (Cell cell : group.getHiddenCells()) {
-                if (cellToOpen == null)
-                    cellToOpen = cell;
-                else if (cellToOpen.getProbability() < cell.getProbability())
-                    cellToOpen = cell;
-            }
-        }
-
-        if (cellToOpen == null) {
-            for (Group group : groups) {
-                for (Cell cell : group.getHiddenCells()) {
-                    if (cell.isHidden())
-                        cellToOpen = cell;
-                }
-            }
-        }
-
-        if (cellToOpen != null)
-            openCell(cellToOpen.getId(), (ImageButton) parent.findViewWithTag(cellToOpen.getId()));
+        return counter == 0;
     }
 
 }

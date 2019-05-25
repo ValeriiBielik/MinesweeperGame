@@ -26,7 +26,7 @@ public class ScoreDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle("Best scores - " + MainActivity.convertDifficultyToString(String.valueOf(difficulty)))
-                .setMessage("1) " + scoreArray[0] + "\n2) "  + scoreArray[1] + "\n3) " + scoreArray[2])
+                .setMessage("1) " + scoreArray[0] + "\n2) " + scoreArray[1] + "\n3) " + scoreArray[2])
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
